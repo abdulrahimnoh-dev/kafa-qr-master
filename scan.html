@@ -71,13 +71,16 @@
           String(url.searchParams.get("token") || "")
             .trim();
 
-     if (
+  if (
   url.hostname !== "script.google.com" ||
- !url.pathname.endsWith(
-  "/s/AKfycbyMYjqP-6xR0_Fw9JTIE4FvMeKSXGv4GT4rIke7TSr9tX2eSGG9vhgt9YvXBmqwrVde/exec"
-)
+  !url.pathname.endsWith(
+    "/s/AKfycbyMYjqP-6xR0_Fw9JTIE4FvMeKSXGv4GT4rIke7TSr9tX2eSGG9vhgt9YvXBmqwrVde/exec"
+  )
+) {
   document.getElementById("status").innerText =
-    "❌ QR bukan daripada sistem.";
+    "❌ QR bukan daripada sistem.\n\n" +
+    "HOST: " + url.hostname + "\n" +
+    "PATH: " + url.pathname;
   return;
 }
         if (
