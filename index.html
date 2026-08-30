@@ -78,13 +78,16 @@
     const params = new URLSearchParams(window.location.search);
 
     const mode =
-      String(params.get("mode") || "")
-        .trim()
-        .toUpperCase();
+  String(params.get("mode") || "")
+    .trim()
+    .toUpperCase();
 
-    const content =
-      document.getElementById("content");
+const token =
+  String(params.get("token") || "")
+    .trim();
 
+const content =
+  document.getElementById("content");
     if (mode !== "KELUAR" && mode !== "MASUK") {
 
       content.innerHTML =
