@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengesahan QR</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 420px;
+      background: white;
+      padding: 32px 24px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .mode {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .code {
+      font-size: 42px;
+      font-weight: bold;
+      letter-spacing: 6px;
+      margin: 24px 0;
+    }
+
+    .error {
+      color: #b00020;
+      font-weight: bold;
+    }
+
+    .info {
+      color: #555;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>SISTEM REKOD KELUAR MASUK GURU</h1>
+
+    <p>NAMA SEKOLAH</p>
+
+    <div id="content">
+      Sedang mengesahkan QR...
+    </div>
+
+  </div>
+
+  <script>
+
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbyMYjqP-6xR0_Fw9JTIE4FvMeKSXGv4GT4rIke7TSr9tX2eSGG9vhgt9YvXBmqwrVde/exec";
+
+    const params = new URLSearchParams(window.location.search);
+
+    const mode =
+      String(params.get("mode") || "")
+        .trim()
+        .toUpperCase();
+
+    const content =
+      document.getElementById("content");
+
+    if (mode !== "KELUAR" && mode !== "MASUK") {
+
+      content.innerHTML =
+        '<div class="error">QR tidak sah.</div>';
+
+    } else {
+
+      fetch(
+        API_URL +
+        "?action=createqrbridge&qrmode=" +
+        encodeURIComponent(mode)
+      )
+      .then(response => response.json())
+      .then(data => {
+
+        if (!data.success) {
+
+          content.innerHTML =
+            '<div class="error">' +
+            (data.message || "Pengesahan QR gagal.") +
+            '</div>';
+
+          return;
+        }
+
+        content.innerHTML = `
+          <div class="mode">
+            PENGESAHAN ${mode}
+          </div>
+
+          <p>QR berjaya disahkan.</p>
+
+          <div class="code">
+            ${data.bridgeCode}
+          </div>
+
+          <div class="info">
+            Kembali ke sistem dan masukkan
+            kod 6 digit ini pada bahagian
+            <b>PENGESAHAN QR</b>.
+          </div>
+        `;
+
+      })
+      .catch(error => {
+
+        content.innerHTML =
+          '<div class="error">' +
+          'Tidak dapat menghubungi server.' +
+          '</div>';
+
+      });
+
+    }
+
+  </script>
+
+</body>
+</html>
