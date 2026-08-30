@@ -95,11 +95,13 @@ const content =
 
     } else {
 
-      fetch(
-        API_URL +
-        "?action=createqrbridge&qrmode=" +
-        encodeURIComponent(mode)
-      )
+     fetch(
+  API_URL +
+  "?action=createqrbridge&qrmode=" +
+  encodeURIComponent(mode) +
+  "&token=" +
+  encodeURIComponent(token)
+)
       .then(response => response.json())
       .then(data => {
 
