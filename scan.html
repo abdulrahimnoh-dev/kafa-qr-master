@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Scan QR</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      text-align: center;
+    }
+
+    .box {
+      max-width: 430px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    #reader {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h2>SCAN QR</h2>
+
+    <p>Arahkan kamera kepada QR KELUAR atau QR MASUK.</p>
+
+    <div id="reader"></div>
+
+    <div id="status">
+      Menunggu QR...
+    </div>
+
+  </div>
+
+  <script>
+
+    let selesai = false;
+
+    function onScanSuccess(decodedText) {
+
+      if (selesai) return;
+
+      try {
+
+        const url = new URL(decodedText);
+
+        const mode =
+          String(url.searchParams.get("mode") || "")
+            .trim()
+            .toUpperCase();
+
+        const token =
+          String(url.searchParams.get("token") || "")
+            .trim();
+
+        if (
+  url.hostname !== "script.google.com" ||
+  url.pathname !== "/macros/s/AKfycbyMYjqP-6xR0_Fw9JTIE4FvMeKSXGv4GT4rIke7TSr9tX2eSGG9vhgt9YvXBmqwrVde/exec"
+) {
+        if (
+          mode !== "KELUAR" &&
+          mode !== "MASUK"
+        ) {
+          document.getElementById("status").innerText =
+            "❌ QR tidak sah.";
+          return;
+        }
+
+        if (!token) {
+          document.getElementById("status").innerText =
+            "❌ Token QR tidak dijumpai.";
+          return;
+        }
+
+        selesai = true;
+
+        document.getElementById("status").innerText =
+          "✅ QR " + mode + " berjaya dibaca.";
+
+        html5QrCode.stop().then(() => {
+
+          window.location.href =
+            "index.html?mode=" +
+            encodeURIComponent(mode);
+
+        });
+
+      } catch (e) {
+
+        document.getElementById("status").innerText =
+          "❌ QR tidak sah.";
+
+      }
+
+    }
+
+    const html5QrCode =
+      new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras()
+      .then(cameras => {
+
+        if (!cameras || cameras.length === 0) {
+          document.getElementById("status").innerText =
+            "❌ Kamera tidak dijumpai.";
+          return;
+        }
+
+        html5QrCode.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: {
+              width: 250,
+              height: 250
+            }
+          },
+          onScanSuccess
+        );
+
+      })
+      .catch(err => {
+
+        document.getElementById("status").innerText =
+          "❌ Kamera tidak dapat dibuka. Sila benarkan akses kamera.";
+
+      });
+
+  </script>
+
+</body>
+</html>
